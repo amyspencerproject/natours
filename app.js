@@ -3,6 +3,9 @@ const express = require('express');
 
 const app = express();
 
+// middleware
+app.use(express.json());
+
 // app.get('/', (req, res) => {
 //   res
 //     .status(200)
@@ -24,6 +27,29 @@ app.get('/api/v1/tours', (req, res) => {
       tours: tours,
     },
   });
+});
+
+app.post('/api/v1/tours', (req, res) => {
+  // get the last id in tours and add one
+  const newId = tours[tours.length - 1].id + 1;
+  // merge the newId with the req.body to form a new object with out mutating the req.body objec
+  const newTour = Object.assign({ id: newId }, req.body);
+  // add newTour to the original array
+  tours.push(newTour);
+
+  // persist tours into the .json file with an async writeFile
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
 });
 
 const port = 3000;
