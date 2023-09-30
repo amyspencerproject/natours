@@ -1,21 +1,37 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
+const rid = require('connect-rid');
 
 const app = express();
 
-// middleware
+// MIDDLEWARE
+app.use(morgan('dev'));
+
 app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 👋');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
+app.use(rid());
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// only return the tours id that matches route id
-const tour = tours.find((el) => el.id === id);
-
+// ROUTE HANDLERS
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours: tours,
@@ -33,6 +49,9 @@ const getTour = (req, res) => {
       message: 'Invalid ID',
     });
   }
+
+  // only return the tours id that matches route id
+  const tour = tours.find((el) => el.id === id);
 
   res.status(200).json({
     status: 'success',
@@ -93,15 +112,7 @@ const deleteTour = (req, res) => {
   });
 };
 
-// app.get('/api/v1/tours', getAllTours);
-
-// app.get('/api/v1/tours/:id', getTour);
-
-// app.post('/api/v1/tours', createNewTour);
-
-// app.patch('/api/v1/tours/:id', updateTour);
-
-// app.delete('/api/v1/tours/:id', deleteTour);
+// ROUTES
 
 app.route('/api/v1/tours').get(getAllTours).post(createNewTour);
 
@@ -110,6 +121,8 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+// START SERVER
 
 const port = 3000;
 app.listen(port, () => {

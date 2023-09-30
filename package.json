@@ -9,6 +9,10 @@
   "author": "Amy Spencer",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "connect-rid": "^0.0.1"
   }
 }
