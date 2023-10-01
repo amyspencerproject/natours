@@ -1,7 +1,8 @@
-const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
-const rid = require('connect-rid');
+
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
@@ -19,146 +20,6 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
-
-app.use(rid());
-
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-
-// ROUTE HANDLERS
-const getAllTours = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    results: tours.length,
-    data: {
-      tours: tours,
-    },
-  });
-};
-
-const getTour = (req, res) => {
-  // convert string to number
-  const id = req.params.id * 1;
-
-  if (id > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  // only return the tours id that matches route id
-  const tour = tours.find((el) => el.id === id);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-};
-
-const createNewTour = (req, res) => {
-  // get the last id in tours and add one
-  const newId = tours[tours.length - 1].id + 1;
-  // merge the newId with the req.body to form a new object with out mutating the req.body objec
-  const newTour = Object.assign({ id: newId }, req.body);
-  // add newTour to the original array
-  tours.push(newTour);
-
-  // persist tours into the .json file with an async writeFile
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-};
-
-const updateTour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here . . . >',
-    },
-  });
-};
-
-const deleteTour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-  res.status(204).json({
-    status: 'success',
-    data: null,
-  });
-};
-
-const getAllUsers = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this route is not yet defined',
-  });
-};
-
-const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this route is not yet defined',
-  });
-};
-
-const createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this route is not yet defined',
-  });
-};
-
-const updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this route is not yet defined',
-  });
-};
-
-const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this route is not yet defined',
-  });
-};
-
-// ROUTES
-
-// tours
-// tourRouter is middleware
-const tourRouter = express.Router();
-tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
-tourRouter.route('/').get(getAllTours).post(createNewTour);
-
-// users
-const userRouter = express.Router();
-userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
-userRouter.route('/').get(getAllUsers).post(createUser);
 
 // mount the router
 app.use('/api/v1/tours', tourRouter);
