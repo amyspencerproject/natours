@@ -31,9 +31,12 @@ This app is final project for Jonas Schmedtmann's Node course.
 
   will make a variable called id that can be defined in the url request by the user. This is why the above JS trick is needed. That id needs to be a number to retrieve the correct tour.
 
+- The entry point should be the server.js file which starts the server and sets the port i.e. port 3000. It is a good practice to have everything related to Express in one file and everything related to the server in a different file.
+
 ### Useful resources
 
 - [Express](https://www.npmjs.com/package/express?activeTab=readme) - Documentation
+- [Middleware for Express](https://expressjs.com/en/resources/middleware.html) - List from Express of good middleware
 
 ## Author
 
