@@ -11,6 +11,9 @@ app.use(morgan('dev'));
 
 app.use(express.json());
 
+// this is just an example of how to serve static files
+app.use(express.static(`${__dirname}/public`));
+
 app.use((req, res, next) => {
   console.log('Hello from the middleware 👋');
   next();
