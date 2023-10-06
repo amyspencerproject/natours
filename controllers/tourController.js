@@ -1,9 +1,9 @@
-const express = require('express');
+// const express = require('express');
 const fs = require('fs');
 
 // DATA
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
 exports.checkId = (req, res, next, val) => {
@@ -59,7 +59,7 @@ exports.createNewTour = (req, res) => {
   // get the last id in tours and add one
   const newId = tours[tours.length - 1].id + 1;
   // merge the newId with the req.body to form a new object with out mutating the req.body objec
-  const newTour = Object.assign({ id: newId }, req.body);
+  const newTour = { id: newId, ...req.body };
   // add newTour to the original array
   tours.push(newTour);
 
@@ -74,7 +74,7 @@ exports.createNewTour = (req, res) => {
           tour: newTour,
         },
       });
-    }
+    },
   );
 };
 
