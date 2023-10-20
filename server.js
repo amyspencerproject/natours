@@ -35,7 +35,21 @@ const tourSchema = new mongoose.Schema({
 
 const Tour = mongoose.model('Tour', tourSchema);
 
-console.log(Tour);
+const testTour = new Tour({
+  name: 'The Skinny Dipper',
+  rating: 4.3,
+  price: 675,
+});
+
+testTour
+  .save()
+  .then((doc) => {
+    console.log(doc);
+  })
+  .catch((err) => {
+    console.log('Error', err);
+  });
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
